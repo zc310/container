@@ -85,7 +85,9 @@ func (p *List) IndexOf(v interface{}) int {
 
 // Insert Inserts a new item into the list at a given index position
 func (p *List) Insert(i int, v interface{}) {
-	p.elements = append(p.elements[:i], p.elements[i+1:]...)
+	p.elements=append(p.elements,0)
+	copy(p.elements[i+1:],p.elements[i:])
+	p.elements[i]=v
 	p.size++
 }
 
