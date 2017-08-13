@@ -1,7 +1,9 @@
 package list
 
-import "bytes"
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+)
 
 // List very useful general purpose list container
 type List struct {
@@ -26,12 +28,11 @@ func (p List) Empty() bool {
 }
 
 // Add Add an item to the list
-func (p *List) Add(c interface{}) int {
+func (p *List) Add(v interface{}) int {
 	if p.size == p.capacity {
 		p.grow()
 	}
-
-	p.elements[p.size] = c
+	p.elements[p.size] = v
 	p.size++
 	return p.size - 1
 }
@@ -64,6 +65,7 @@ func (p *List) Delete(i int) {
 	}
 	p.elements = append(p.elements[:i], p.elements[i+1:]...)
 	p.size--
+	p.shrink()
 }
 
 // Last Gets the last item in the list
@@ -85,9 +87,9 @@ func (p *List) IndexOf(v interface{}) int {
 
 // Insert Inserts a new item into the list at a given index position
 func (p *List) Insert(i int, v interface{}) {
-	p.elements=append(p.elements,0)
-	copy(p.elements[i+1:],p.elements[i:])
-	p.elements[i]=v
+	p.elements = append(p.elements, 0)
+	copy(p.elements[i+1:], p.elements[i:])
+	p.elements[i] = v
 	p.size++
 }
 
@@ -115,6 +117,7 @@ func (p *List) Remove(v interface{}) int {
 	i := p.IndexOf(v)
 	if i >= 0 {
 		p.Delete(i)
+		p.shrink()
 	}
 	return i
 }
@@ -130,18 +133,20 @@ func (p *List) grow() {
 			delta = 4
 		}
 	}
-	p.SetCapacity(p.capacity + delta)
+	p.Grow(p.capacity + delta)
 }
 
-// SetCapacity Used to set the size (number object pointers) of the list
-func (p *List) SetCapacity(n int) {
-	if n > p.capacity {
-		newlist := make([]interface{}, n)
-		copy(newlist, p.elements)
-		p.elements = newlist
-		p.capacity = n
+// Grow Used to set the size (number object pointers) of the list
+func (p *List) Grow(n int) {
+	newSlice := make([]interface{}, n)
+	copy(newSlice, p.elements)
+	p.elements = newSlice
+	p.capacity = n
+}
+func (p *List) shrink() {
+	if p.size <= int(float32(len(p.elements))*0.2) {
+		p.Grow(p.size)
 	}
-
 }
 func (p *List) String() string {
 	var b bytes.Buffer

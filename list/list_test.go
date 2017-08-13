@@ -1,9 +1,8 @@
 package list
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestList(t *testing.T) {
@@ -39,20 +38,53 @@ func TestList(t *testing.T) {
 	assert.Equal(t, list.Remove(9), 8)
 	assert.Equal(t, list.IndexOf(9), -1)
 
+	list.Insert(0, 0)
+	v, _ = list.Get(0)
+	assert.Equal(t, 0, v)
+
 	list.Clear()
 	assert.Equal(t, list.Empty(), true)
-
 }
 func BenchmarkAdd(b *testing.B) {
 	var list List
-	for i := 0; i < 4782969; i++ {
+	for i := 0; i < b.N; i++ {
 		list.Add(i)
 	}
 }
-func BenchmarkSetCapacity(b *testing.B) {
+func BenchmarkAddSetCapacity(b *testing.B) {
 	var list List
-	list.SetCapacity(4782969)
-	for i := 0; i < 4782969; i++ {
+	list.Grow(b.N)
+	for i := 0; i < b.N; i++ {
 		list.Add(i)
+	}
+}
+func BenchmarkDelete(b *testing.B) {
+	var list List
+	for i := 0; i < b.N; i++ {
+		list.Add(i)
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		list.Delete(i)
+	}
+}
+func BenchmarkRemove(b *testing.B) {
+	var list List
+	for i := 0; i < b.N; i++ {
+		list.Add(i)
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		list.Remove(i)
+	}
+}
+func BenchmarkInsert(b *testing.B) {
+	var list List
+	for i := 0; i < b.N; i++ {
+		list.Add(i)
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		list.Insert(i, i)
 	}
 }
