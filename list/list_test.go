@@ -45,13 +45,21 @@ func TestList(t *testing.T) {
 	list.Clear()
 	assert.Equal(t, list.Empty(), true)
 }
+func BenchmarkAdd_Slice(b *testing.B) {
+	var list []int
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		list = append(list, i)
+	}
+}
 func BenchmarkAdd(b *testing.B) {
 	var list List
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		list.Add(i)
 	}
 }
-func BenchmarkAddSetCapacity(b *testing.B) {
+func BenchmarkAdd_Grow(b *testing.B) {
 	var list List
 	list.Grow(b.N)
 	for i := 0; i < b.N; i++ {
